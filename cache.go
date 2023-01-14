@@ -16,10 +16,10 @@ func New() *Cache {
 
 func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.m[key] = value
-	select {
-	case <-time.After(ttl):
-		go c.Delete(key)
+	delete := func() {
+		c.Delete(key)
 	}
+	time.AfterFunc(ttl, delete)
 }
 
 func (c Cache) Get(key string) interface{} {
