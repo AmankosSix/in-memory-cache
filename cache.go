@@ -1,5 +1,9 @@
 package in_memory_cache
 
+import (
+	"time"
+)
+
 type Cache struct {
 	m map[string]interface{}
 }
@@ -10,8 +14,12 @@ func New() *Cache {
 	}
 }
 
-func (c Cache) Set(key string, value interface{}) {
+func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.m[key] = value
+	select {
+	case <-time.After(ttl):
+		c.Delete(key)
+	}
 }
 
 func (c Cache) Get(key string) interface{} {
