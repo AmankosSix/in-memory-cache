@@ -19,7 +19,7 @@ func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	delete := func() {
 		c.Delete(key)
 	}
-	time.AfterFunc(ttl, delete)
+	go time.AfterFunc(ttl, delete)
 }
 
 func (c Cache) Get(key string) interface{} {
