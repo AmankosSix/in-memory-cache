@@ -1,6 +1,8 @@
 package in_memory_cache
 
 import (
+	"errors"
+	"fmt"
 	"time"
 )
 
@@ -22,8 +24,13 @@ func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	go time.AfterFunc(ttl, delete)
 }
 
-func (c Cache) Get(key string) interface{} {
-	return c.m[key]
+func (c Cache) Get(key string) (interface{}, error) {
+	val, ok := c.m[key]
+	if ok {
+		return val, nil
+	}
+	message := fmt.Sprintf("%s is not Found in cache memory", key)
+	return nil, errors.New(message)
 }
 
 func (c Cache) Delete(key string) {
