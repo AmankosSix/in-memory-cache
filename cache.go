@@ -18,7 +18,7 @@ func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.m[key] = value
 	select {
 	case <-time.After(ttl):
-		c.Delete(key)
+		go c.Delete(key)
 	}
 }
 
