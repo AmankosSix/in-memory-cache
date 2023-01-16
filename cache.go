@@ -28,8 +28,12 @@ func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.mu.Unlock()
 
 	go func() {
-		<-timer.C
-		c.Delete(key)
+		for {
+			select {
+			case <-timer.C:
+				c.Delete(key)
+			}
+		}
 	}()
 }
 
@@ -48,5 +52,6 @@ func (c Cache) Get(key string) (interface{}, error) {
 func (c Cache) Delete(key string) {
 	c.mu.Lock()
 	delete(c.m, key)
+	timer.Stop()
 	c.mu.Unlock()
 }
