@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var timer *time.Timer
+//var timer *time.Timer
 
 type Cache struct {
 	m  map[string]interface{}
@@ -24,7 +24,7 @@ func New() *Cache {
 func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.mu.Lock()
 	c.m[key] = value
-	timer.Reset(ttl)
+	timer := time.NewTimer(ttl)
 	c.mu.Unlock()
 
 	go func() {
@@ -52,6 +52,5 @@ func (c Cache) Get(key string) (interface{}, error) {
 func (c Cache) Delete(key string) {
 	c.mu.Lock()
 	delete(c.m, key)
-	timer.Stop()
 	c.mu.Unlock()
 }
