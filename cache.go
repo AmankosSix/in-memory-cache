@@ -3,7 +3,6 @@ package in_memory_cache
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 )
@@ -41,12 +40,12 @@ func (c Cache) startTimer(key string) {
 	for {
 		select {
 		case <-c.ttl.C:
-			log.Println("Time to clear cache")
+			//log.Println("Time to clear cache")
 			c.ttl.Stop()
 			c.Delete(key)
 			return
 		default:
-			log.Println("Waiting")
+			//log.Println("Waiting")
 			time.Sleep(1 * time.Second)
 		}
 	}
