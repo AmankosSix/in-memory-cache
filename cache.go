@@ -44,6 +44,7 @@ func (c Cache) startTimer(key string) {
 			log.Println("Time to clear cache")
 			c.Delete(key)
 			c.ttl.Stop()
+			return
 		default:
 			log.Println("Waiting")
 			time.Sleep(1 * time.Second)
