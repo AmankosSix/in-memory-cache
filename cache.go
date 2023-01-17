@@ -10,31 +10,40 @@ import (
 //var timer *time.Timer
 
 type Cache struct {
-	m  map[string]interface{}
-	mu *sync.Mutex
+	m   map[string]interface{}
+	mu  *sync.Mutex
+	ttl *time.Timer
 }
 
 func New() *Cache {
 	return &Cache{
-		m:  make(map[string]interface{}),
-		mu: new(sync.Mutex),
+		m:   make(map[string]interface{}),
+		mu:  new(sync.Mutex),
+		ttl: nil,
 	}
 }
 
 func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
 	c.mu.Lock()
 	c.m[key] = value
-	timer := time.NewTimer(ttl)
+	if c.ttl == nil {
+		c.ttl = time.NewTimer(ttl)
+		go c.startTimer(key)
+	} else {
+		c.ttl.Stop()
+		c.ttl.Reset(ttl)
+	}
 	c.mu.Unlock()
+}
 
-	go func() {
-		for {
-			select {
-			case <-timer.C:
-				c.Delete(key)
-			}
+func (c Cache) startTimer(key string) {
+	for {
+		select {
+		case <-c.ttl.C:
+			fmt.Println("Time to clear cache")
+			c.Delete(key)
 		}
-	}()
+	}
 }
 
 func (c Cache) Get(key string) (interface{}, error) {
