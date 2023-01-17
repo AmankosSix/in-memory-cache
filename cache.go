@@ -42,8 +42,8 @@ func (c Cache) startTimer(key string) {
 		select {
 		case <-c.ttl.C:
 			log.Println("Time to clear cache")
-			c.Delete(key)
 			c.ttl.Stop()
+			c.Delete(key)
 			return
 		default:
 			log.Println("Waiting")
