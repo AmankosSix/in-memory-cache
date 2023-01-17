@@ -42,6 +42,9 @@ func (c Cache) startTimer(key string) {
 		case <-c.ttl.C:
 			fmt.Println("Time to clear cache")
 			c.Delete(key)
+		default:
+			fmt.Println("Waiting")
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
